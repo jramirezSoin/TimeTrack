@@ -1,0 +1,14 @@
+{
+  "TAREAS": [
+    {
+      "id": "1000000000112368",
+      "horas": 1.0,
+      "comentario": "pruebaSIGES",
+      "numIdent": "SPR 23",
+      "clienteId": "null",
+      "subClienteCod": "null",
+      "especialidadId": "null",
+      "avanceNuevo": 0
+    }
+  ]
+}

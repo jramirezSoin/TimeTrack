@@ -1,0 +1,7 @@
+<nav aria-label="Secciones de reporte de horas">
+<ul class="nav subnav">
+  <li class="nav-item"><a class="nav-link{% if active == 'nuevo' %} active{% endif %}" href="/horas/"{% if active == 'nuevo' %} aria-current="page"{% endif %}><i class="bi bi-pencil-square" aria-hidden="true"></i>Nuevo reporte</a></li>
+  <li class="nav-item"><a class="nav-link{% if active == 'sprint' %} active{% endif %}" href="/horas/sprint"{% if active == 'sprint' %} aria-current="page"{% endif %}><i class="bi bi-list-task" aria-hidden="true"></i>Mi sprint</a></li>
+  <li class="nav-item"><a class="nav-link{% if active == 'historial' %} active{% endif %}" href="/horas/historial"{% if active == 'historial' %} aria-current="page"{% endif %}><i class="bi bi-clock-history" aria-hidden="true"></i>Historial</a></li>
+</ul>
+</nav>

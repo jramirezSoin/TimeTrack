@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% block title %}Pull Requests · Dashboard{% endblock %}
+{% block content %}
+<div class="page-head">
+  <h1>Pull Requests</h1>
+  <p>Compare su branch con la principal para ver qué commits faltan y cree el PR en Azure DevOps.</p>
+</div>
+
+{% if not error %}
+<h2 class="h6">Mis PRs activos</h2>
+<div id="mis-prs" hx-get="/pullrequests/mis" hx-trigger="load" hx-swap="innerHTML">
+  <p class="meta">Consultando Azure DevOps…</p>
+</div>
+{% endif %}
+
+{% if error %}
+{% set message = error %}{% include "pullrequests/_error.html" %}
+{% endif %}
+
+<form class="nota-nueva" hx-post="/pullrequests/estado" hx-target="#pr-resultado" hx-swap="innerHTML"
+      hx-disabled-elt="find button" hx-indicator="#comparando">
+  <input type="text" name="branch" class="form-control" value="{{ origen }}" placeholder="Branch de origen…" list="branches"
+         aria-label="Branch de origen" required autocomplete="off">
+  <datalist id="branches">{% for b in branches %}<option value="{{ b }}">{% endfor %}</datalist>
+  <input type="text" name="destino" class="form-control" value="{{ destino }}" placeholder="Destino…"
+         aria-label="Branch destino" autocomplete="off">
+  <button type="submit" class="btn btn-primary"><i class="bi bi-arrow-left-right" aria-hidden="true"></i>Comparar</button>
+  <span id="comparando" class="meta htmx-indicator">Consultando Azure DevOps…</span>
+</form>
+
+<div id="pr-resultado" aria-live="polite"></div>
+{% endblock %}

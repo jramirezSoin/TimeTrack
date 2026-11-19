@@ -1,0 +1,45 @@
+<div class="card mb-3">
+  <div class="card-body">
+    <div class="section-label"><i class="bi bi-git" aria-hidden="true"></i>{{ st.source }} → {{ st.target }}</div>
+
+    <h2 class="h6">Pendientes de integrar (irían en el PR) <span class="badge text-bg-primary">{{ st.ahead_count }}</span></h2>
+    {% with commits=st.ahead, total=st.ahead_count %}{% include "pullrequests/_commits.html" %}{% endwith %}
+
+    <h2 class="h6">Le faltan a su branch (están en {{ st.target }}) <span class="badge text-bg-secondary">{{ st.behind_count }}</span></h2>
+    {% with commits=st.behind, total=st.behind_count %}{% include "pullrequests/_commits.html" %}{% endwith %}
+  </div>
+</div>
+
+{% if st.aviso %}
+<div class="alert alert-warning" role="status">{{ st.aviso }} Aun así puede crear el PR; Azure validará los cambios.</div>
+{% endif %}
+
+{% if st.pr_activo %}
+<div class="alert alert-info" role="status">
+  Ya hay un PR activo para esta branch: #{{ st.pr_activo.pullRequestId }}. Si pulsa «Crear PR» se reutilizará, no se duplica.
+</div>
+{% endif %}
+
+{% if st.ahead_count or st.aviso %}
+<form class="card" hx-post="/pullrequests/crear" hx-target="#pr-resultado" hx-swap="innerHTML"
+      hx-disabled-elt="find button" hx-indicator="#creando">
+  <div class="card-body d-grid gap-2">
+    <input type="hidden" name="branch" value="{{ st.source }}">
+    <input type="hidden" name="destino" value="{{ st.target }}">
+    <input type="text" name="titulo" class="form-control" placeholder="Título del PR…" maxlength="400"
+           aria-label="Título del PR" required autocomplete="off">
+    <textarea name="descripcion" class="form-control" rows="3" placeholder="Descripción (opcional)…"
+              aria-label="Descripción del PR"></textarea>
+    <div class="form-check">
+      <input class="form-check-input" type="checkbox" name="draft" value="1" id="pr-draft">
+      <label class="form-check-label" for="pr-draft">Crear como borrador (draft)</label>
+    </div>
+    <div>
+      <button type="submit" class="btn btn-primary"><i class="bi bi-git" aria-hidden="true"></i>Crear PR</button>
+      <span id="creando" class="meta htmx-indicator ms-2">Creando…</span>
+    </div>
+  </div>
+</form>
+{% else %}
+<div class="alert alert-secondary" role="status">No hay commits nuevos que integrar; no hay nada para un PR.</div>
+{% endif %}

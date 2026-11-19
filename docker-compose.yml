@@ -1,0 +1,23 @@
+services:
+  timetrack:
+    build: .
+    image: timetrack-dashboard
+    container_name: timetrack
+    restart: unless-stopped
+    # El dashboard no tiene autenticación: solo se publica en localhost del anfitrión.
+    ports:
+      - "127.0.0.1:8000:8000"
+    # Credenciales y ajustes desde .env (copia .env.example a .env).
+    env_file:
+      - .env
+    environment:
+      # Hosts adicionales aceptados por el dashboard (separados por coma); localhost ya viene incluido.
+      DASHBOARD_ALLOWED_HOSTS: ${DASHBOARD_ALLOWED_HOSTS:-}
+    volumes:
+      # Estado local: ledger, catálogo y tareas.
+      - ./data:/app/data
+      # Configuración de Azure DevOps (está en .gitignore, no va en la imagen).
+      # En un clon nuevo: copia azure/config.example.json y siges/config.example.json a config.json.
+      - ./azure/config.json:/app/azure/config.json:ro
+      # URI de SIGES (también en .gitignore).
+      - ./siges/config.json:/app/siges/config.json:ro

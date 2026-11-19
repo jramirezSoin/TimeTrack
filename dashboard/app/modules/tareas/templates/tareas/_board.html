@@ -1,0 +1,46 @@
+<div id="tablero">
+  {% if error %}
+  <div class="alert alert-warning py-2" role="alert"><i class="bi bi-exclamation-triangle me-1" aria-hidden="true"></i>{{ error }}</div>
+  {% endif %}
+  <div class="tablero">
+    {% for estado, titulo, icono in columnas %}
+    <section class="columna columna-{{ estado.value }}" data-drop="{{ estado.value }}" aria-label="{{ titulo }}">
+      <h2 class="columna-titulo"><i class="bi {{ icono }}" aria-hidden="true"></i>{{ titulo }}<span class="columna-n">{{ tablero[estado]|length }}</span></h2>
+      <div class="columna-notas">
+        {% for t in tablero[estado] %}
+        <article class="postit postit-{{ estado.value }}" draggable="true" data-id="{{ t.id }}" data-estado="{{ estado.value }}"
+                 style="--tilt: {{ [-2.2, 1.4, -0.8, 2.0, -1.5][t.id % 5] }}deg">
+          <div class="postit-texto">{{ t.titulo }}</div>
+          {% if t.incidente %}
+          <div class="postit-meta"><i class="bi bi-hash" aria-hidden="true"></i>{{ t.incidente }}{% if t.azure_id %} · Azure {{ t.azure_id }}{% endif %}</div>
+          {% endif %}
+          <div class="postit-acciones">
+            {% if estado.value != 'pendiente' %}
+            <button type="button" class="postit-btn" title="Mover a la columna anterior" aria-label="Mover a la columna anterior"
+                    hx-post="/tareas/{{ t.id }}/mover" hx-vals='{"estado": "{{ "pendiente" if estado.value == "en_proceso" else "en_proceso" }}"}'
+                    hx-target="#tablero" hx-swap="outerHTML"><i class="bi bi-arrow-left" aria-hidden="true"></i></button>
+            {% endif %}
+            {% if estado.value != 'entregada' %}
+            <button type="button" class="postit-btn" title="Mover a la columna siguiente" aria-label="Mover a la columna siguiente"
+                    hx-post="/tareas/{{ t.id }}/mover" hx-vals='{"estado": "{{ "en_proceso" if estado.value == "pendiente" else "entregada" }}"}'
+                    hx-target="#tablero" hx-swap="outerHTML"><i class="bi bi-arrow-right" aria-hidden="true"></i></button>
+            {% endif %}
+            <button type="button" class="postit-btn" title="Cerrar (al basurero)" aria-label="Cerrar tarea"
+                    hx-post="/tareas/{{ t.id }}/mover" hx-vals='{"estado": "cerrada"}'
+                    hx-target="#tablero" hx-swap="outerHTML"><i class="bi bi-x-lg" aria-hidden="true"></i></button>
+          </div>
+        </article>
+        {% else %}
+        <p class="columna-vacia">Arrastre una nota aquí</p>
+        {% endfor %}
+      </div>
+    </section>
+    {% endfor %}
+
+    <section class="basurero" data-drop="cerrada" aria-label="Basurero: suelte aquí para cerrar la tarea">
+      <i class="bi bi-trash3" aria-hidden="true"></i>
+      <span>Basurero</span>
+      <small>Suelte aquí para cerrar</small>
+    </section>
+  </div>
+</div>

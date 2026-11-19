@@ -1,0 +1,8 @@
+{
+  "task": {
+      "incident": "100001616",
+      "title": "DEV - Revision SOA",
+      "description": "Revisión de weblogic por error en HagaseCliente. Revisión de java properties en ambientes productivos de OCI y OC3",
+      "hours": 4
+    }
+}

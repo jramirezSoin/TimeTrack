@@ -1,0 +1,17 @@
+{% if prs %}
+<ul class="list-group mb-3">
+  {% for p in prs %}
+  <li class="list-group-item">
+    <div><strong>{{ p.target | upper }}:</strong> <a href="{{ p.url }}" target="_blank" rel="noopener">{{ p.url }}<span class="visually-hidden"> (se abre en una pestaña nueva)</span></a>
+      {% if p.draft %}<span class="badge text-bg-secondary ms-1">draft</span>{% endif %}</div>
+    <div class="meta">#{{ p.id }} {{ p.titulo }} · <code>{{ p.source | upper }}</code> → <code>{{ p.target | upper }}</code> · {{ p.fecha[:10] }}</div>
+    <div class="meta">
+      Reviewers:
+      {% for r in p.reviewers %}{{ r.nombre }}{% if r.voto > 0 %} ✔{% elif r.voto < 0 %} ✖{% endif %}{% if not loop.last %}, {% endif %}{% else %}ninguno{% endfor %}
+    </div>
+  </li>
+  {% endfor %}
+</ul>
+{% else %}
+<p class="meta mb-3">No tiene PRs activos.</p>
+{% endif %}

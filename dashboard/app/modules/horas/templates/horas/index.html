@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% block title %}Reporte de horas · Dashboard{% endblock %}
+{% block content %}
+<div class="page-head">
+  <h1>Reporte de horas</h1>
+  <p>Pegue su reporte en prosa. Se interpreta, se muestra una vista previa y solo se envía cuando usted lo confirma.</p>
+</div>
+{% set active = 'nuevo' %}{% include "horas/_tabs.html" %}
+
+<div class="card mb-4">
+  <div class="card-body">
+    <form hx-post="/horas/interpretar" hx-target="#resultado" hx-swap="innerHTML" hx-disabled-elt="find button">
+      <label for="prosa" class="form-label fw-semibold">Reporte</label>
+      <textarea id="prosa" name="prosa" rows="9" class="form-control" required autocomplete="off" aria-describedby="prosa-ayuda"
+        placeholder="29-10-2026&#10;Fuera de incidente, Soporte a errores en QA. 4&#10;100001273 revisión de diferencias contables en SINPE Móvil. 4"></textarea>
+      <div class="form-text" id="prosa-ayuda">
+        Una línea con la fecha (dd-mm-aaaa) abre cada día; cada actividad empieza con el incidente o con
+        «Fuera de incidente» y termina con sus horas. Cada día debe sumar 8&nbsp;h.
+      </div>
+      <button type="submit" class="btn btn-primary mt-3"><i class="bi bi-magic" aria-hidden="true"></i>Interpretar reporte</button>
+    </form>
+  </div>
+</div>
+
+<div id="resultado" aria-live="polite"></div>
+{% endblock %}

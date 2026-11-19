@@ -1,0 +1,23 @@
+{
+  "id": "/",
+  "name": "TimeTrack",
+  "short_name": "TimeTrack",
+  "description": "Reporte de horas, tareas y utilidades de trabajo (Azure DevOps y SIGES).",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "lang": "es",
+  "background_color": "#eef2f6",
+  "theme_color": "#eef2f6",
+  "icons": [
+    { "src": "/static/pwa/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "/static/pwa/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "/static/pwa/icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" },
+    { "src": "/static/pwa/icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" }
+  ],
+  "shortcuts": [
+    { "name": "Reporte de horas", "url": "/horas/", "icons": [{ "src": "/static/pwa/icon-192.png", "sizes": "192x192", "type": "image/png" }] },
+    { "name": "Tareas", "url": "/tareas/", "icons": [{ "src": "/static/pwa/icon-192.png", "sizes": "192x192", "type": "image/png" }] },
+    { "name": "Utilidades", "url": "/utilidades/json", "icons": [{ "src": "/static/pwa/icon-192.png", "sizes": "192x192", "type": "image/png" }] }
+  ]
+}

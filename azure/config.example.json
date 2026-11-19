@@ -1,0 +1,23 @@
+{
+  "area": "<Proyecto>\\<Equipo>",
+  "org": "<organizacion-azure-devops>",
+  "project": "<proyecto>",
+  "team": "<equipo>",
+  "activity": "Development",
+  "sistema": "<sistema>",
+  "fields": {
+    "Microsoft.VSTS.Common.Severity": "4 - Low",
+    "Custom.Priority_B": "3 - Low",
+    "Custom.Classification": "<clasificacion>",
+    "Custom.Environment": "Production",
+    "Custom.Reporterby": "Production"
+  },
+  "repos": {
+    "default": "<nombre-repo-principal>",
+    "target_branch": "<branch-destino>",
+    "project": "<proyecto-del-repo>",
+    "fork": "<nombre-del-fork>",
+    "source_branch": "<branch-origen>",
+    "reviewers": ["<correo, nombre o GUID del reviewer>"]
+  }
+}

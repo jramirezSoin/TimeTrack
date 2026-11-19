@@ -1,0 +1,5 @@
+<div class="alert alert-success" role="status">
+  <i class="bi bi-check-circle-fill me-1" aria-hidden="true"></i>
+  <strong>{{ "PR creado" if pr.creado else "Ya existía un PR activo (reutilizado)" }}</strong> →
+  <a href="{{ pr.url }}" target="_blank" rel="noopener">#{{ pr.id }} <i class="bi bi-box-arrow-up-right small" aria-hidden="true"></i><span class="visually-hidden">(se abre en una pestaña nueva)</span></a>
+</div>

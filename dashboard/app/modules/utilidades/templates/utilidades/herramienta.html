@@ -1,0 +1,66 @@
+{% extends "base.html" %}
+{% block title %}{{ tool.titulo }} · Utilidades{% endblock %}
+{% block content %}
+<div class="page-head">
+  <h1>Utilidades</h1>
+  <p>{{ tool.descripcion }}</p>
+</div>
+
+<nav aria-label="Herramientas de utilidades">
+<ul class="nav subnav flex-wrap">
+  {% for t in tabs %}
+  <li class="nav-item"><a class="nav-link{% if t.slug == tool.slug %} active{% endif %}" href="/utilidades/{{ t.slug }}"{% if t.slug == tool.slug %} aria-current="page"{% endif %}><i class="bi {{ t.icono }}" aria-hidden="true"></i>{{ t.titulo }}</a></li>
+  {% endfor %}
+</ul>
+</nav>
+
+{% if tool.aviso %}
+<div class="alert alert-warning py-2" role="note"><i class="bi bi-shield-exclamation me-1" aria-hidden="true"></i>{{ tool.aviso }}</div>
+{% endif %}
+
+<form class="card mb-4" hx-post="/utilidades/{{ tool.slug }}" hx-target="#resultado" hx-swap="innerHTML"
+      hx-disabled-elt="find button[type=submit]" hx-indicator="#trabajando">
+  <div class="card-body">
+    <div class="d-flex flex-wrap gap-3 mb-3">
+      {% for c in tool.campos %}
+      <div style="flex: 1 1 {{ c.ancho or '100%' }}; max-width: {{ '100%' if c.tipo == 'textarea' else (c.ancho or '100%') }}">
+        {% if c.tipo == 'textarea' %}
+          <label for="f-{{ c.name }}" class="form-label fw-semibold">{{ c.label }}</label>
+          <textarea id="f-{{ c.name }}" name="{{ c.name }}" rows="{{ c.rows }}" class="form-control campo-datos"
+                    placeholder="{{ c.placeholder }}" spellcheck="false" autocomplete="off"></textarea>
+          {% if c.ayuda %}<div class="form-text">{{ c.ayuda }}</div>{% endif %}
+        {% elif c.tipo == 'select' %}
+          <label for="f-{{ c.name }}" class="form-label fw-semibold">{{ c.label }}</label>
+          <select id="f-{{ c.name }}" name="{{ c.name }}" class="form-select">
+            {% for v, texto in c.opciones %}<option value="{{ v }}">{{ texto }}</option>{% endfor %}
+          </select>
+        {% elif c.tipo == 'check' %}
+          <div class="form-check mt-1">
+            <input class="form-check-input" type="checkbox" id="f-{{ c.name }}" name="{{ c.name }}" value="1">
+            <label class="form-check-label" for="f-{{ c.name }}">{{ c.label }}</label>
+          </div>
+        {% else %}
+          <label for="f-{{ c.name }}" class="form-label fw-semibold">{{ c.label }}</label>
+          <div class="input-group">
+            <input type="text" id="f-{{ c.name }}" name="{{ c.name }}" class="form-control campo-datos" value="{{ c.valor }}"
+                   placeholder="{{ c.placeholder }}" autocomplete="off"{% if c.lista %} list="{{ c.lista }}"{% endif %}>
+            {% if c.ahora %}<button type="button" class="btn btn-outline-secondary" data-ahora="f-{{ c.name }}" title="Poner la hora actual">Ahora</button>{% endif %}
+          </div>
+        {% endif %}
+      </div>
+      {% endfor %}
+    </div>
+    <div class="d-flex flex-wrap align-items-center gap-2">
+      {% for valor, etiqueta, icono in tool.acciones %}
+      <button type="submit" name="accion" value="{{ valor }}" class="btn btn-primary"><i class="bi {{ icono }}" aria-hidden="true"></i>{{ etiqueta }}</button>
+      {% endfor %}
+      <span id="trabajando" class="meta htmx-indicator">Procesando…</span>
+    </div>
+  </div>
+</form>
+
+<datalist id="zonas">{% for z in zonas %}<option value="{{ z }}">{% endfor %}</datalist>
+
+<div id="resultado" aria-live="polite"></div>
+{% endblock %}
+{% block scripts %}<script src="/static/utilidades.js" defer></script>{% endblock %}

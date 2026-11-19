@@ -1,0 +1,12 @@
+<div id="job-{{ job.id }}" hx-get="/horas/jobs/{{ job.id }}" hx-trigger="load delay:1s" hx-swap="outerHTML">
+  <div class="card" aria-busy="true">
+    <div class="card-body">
+      <div class="d-flex align-items-center gap-2 mb-2">
+        <span class="spinner-border spinner-border-sm text-primary" aria-hidden="true"></span>
+        <strong role="status">Trabajando…</strong>
+      </div>
+      <pre class="log">{% for l in log %}{{ l }}
+{% endfor %}</pre>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% block title %}Inicio · TimeTrack{% endblock %}
+{% block content %}
+<div class="page-head">
+  <h1>Herramientas</h1>
+  <p>Elija una herramienta para continuar.</p>
+</div>
+
+{% if not cards %}
+  <div class="alert alert-light border">
+    <i class="bi bi-info-circle me-1" aria-hidden="true"></i>No hay módulos instalados. Agregue una carpeta en <code>app/modules/</code> que exponga <code>module</code>.
+  </div>
+{% endif %}
+
+<div class="row g-3">
+  {% for c in cards %}
+  <div class="col-md-6 col-xl-4">
+    <a href="/{{ c.module.name }}/" class="text-decoration-none">
+      <div class="card card-link-hover h-100">
+        <div class="card-body">
+          <div class="d-flex align-items-center gap-3 mb-2">
+            <span class="icon-tile"><i class="bi {{ c.module.icon }}" aria-hidden="true"></i></span>
+            <h2 class="h6 fw-semibold mb-0 text-body">{{ c.module.title }}</h2>
+          </div>
+          <p class="meta mb-3">{{ c.module.description }}</p>
+          {% for line in c.lines %}<div class="stat">{{ line }}</div>{% endfor %}
+        </div>
+      </div>
+    </a>
+  </div>
+  {% endfor %}
+</div>
+{% endblock %}

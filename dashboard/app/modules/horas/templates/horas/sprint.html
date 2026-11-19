@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% block title %}Mi sprint · Reporte de horas{% endblock %}
+{% block content %}
+<div class="page-head">
+  <h1>Reporte de horas</h1>
+  <p>Escriba un número de sprint para ver sus tareas: título, descripción, estado y horas, agrupadas por su tarea padre. Solo lectura.</p>
+</div>
+{% set active = 'sprint' %}{% include "horas/_tabs.html" %}
+
+<form id="form-sprint" class="nota-nueva" hx-get="/horas/sprint/tareas" hx-target="#sprint-resultado" hx-swap="innerHTML"
+      hx-disabled-elt="find button" hx-indicator="#consultando"
+      hx-on::before-request="history.replaceState(null, '', '?numero=' + encodeURIComponent(this.numero.value.trim()))">
+  <input type="text" name="numero" class="form-control" style="max-width: 14rem" placeholder="Sprint (ej. 22)…"
+         inputmode="numeric" maxlength="12" aria-label="Número de sprint" required autocomplete="off">
+  <button type="submit" class="btn btn-primary"><i class="bi bi-search" aria-hidden="true"></i>Consultar</button>
+  <span id="consultando" class="meta htmx-indicator">Consultando Azure…</span>
+</form>
+
+<div id="sprint-resultado" aria-live="polite"></div>
+{% endblock %}
+{% block scripts %}
+<script>
+  // El sprint consultado queda en la URL (?numero=22): se puede recargar o enlazar. El foco automático solo en escritorio.
+  document.addEventListener("DOMContentLoaded", function () {
+    var form = document.getElementById("form-sprint");
+    var campo = form.elements.numero;
+    var previo = new URLSearchParams(location.search).get("numero");
+    if (previo) {
+      campo.value = previo.slice(0, 12);
+      htmx.trigger(form, "submit");
+    }
+    if (window.matchMedia("(hover: hover) and (pointer: fine)").matches) campo.focus();
+  });
+</script>
+{% endblock %}

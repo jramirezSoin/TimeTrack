@@ -1,0 +1,11 @@
+<div class="alert alert-danger" role="alert">
+  <div class="fw-semibold mb-1"><i class="bi bi-exclamation-triangle-fill me-1" aria-hidden="true"></i>No se pudo continuar</div>
+  <div class="log text-danger-emphasis">{{ message }}</div>
+  {% if log %}
+  <details class="mt-2">
+    <summary class="meta">Registro</summary>
+    <pre class="log mt-2">{% for l in log %}{{ l }}
+{% endfor %}</pre>
+  </details>
+  {% endif %}
+</div>

@@ -1,0 +1,9 @@
+{
+  "parent": {
+      "title": "Revision SOA",
+      "description": "Revisión general de SOA",
+      "assignedTo": "Jramirezba@bncr.fi.cr",
+      "activity": "Development",
+      "sistema": "Soa"
+    }
+}

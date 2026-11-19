@@ -1,0 +1,24 @@
+.git
+.agents
+.claude
+.venv
+venv
+__pycache__
+*.py[cod]
+*.tmp
+*.xlsx
+
+# Secretos y estado local: se inyectan en tiempo de ejecución, no se hornean en la imagen
+.env
+data/
+azure/config.json
+siges/config.json
+
+# No necesario para ejecutar
+tests/
+dashboard/tests/
+dashboard/tools/
+dashboard/*.ps1
+dashboard/*.cmd
+Dockerfile
+docker-compose.yml

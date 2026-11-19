@@ -1,0 +1,107 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="TimeTrack: reporte de horas, tareas y utilidades.">
+  <title>{% block title %}TimeTrack{% endblock %}</title>
+  <script>
+    // Aplica el tema antes de pintar (evita el destello): elección guardada o preferencia del sistema.
+    (function () {
+      var t = null;
+      try { t = localStorage.getItem("theme"); } catch (e) {}
+      if (t !== "light" && t !== "dark") {
+        t = window.matchMedia && matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+      }
+      document.documentElement.setAttribute("data-bs-theme", t);
+    })();
+  </script>
+  <link rel="manifest" href="/manifest.webmanifest">
+  <meta name="theme-color" content="#eef2f6" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#0b1f26" media="(prefers-color-scheme: dark)">
+  <link rel="icon" type="image/svg+xml" href="/static/pwa/icon.svg">
+  <link rel="apple-touch-icon" href="/static/pwa/apple-touch-icon.png">
+  <link rel="preload" href="/static/vendor/fonts/instrument-sans-latin.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="/static/vendor/fonts/fonts.css">
+  <link rel="stylesheet" href="/static/vendor/bootstrap/bootstrap.min.css">
+  <link rel="stylesheet" href="/static/vendor/bootstrap-icons/bootstrap-icons.min.css">
+  <link rel="stylesheet" href="/static/app.css?v=1.0.5">
+  <script src="/static/vendor/htmx/htmx.min.js" defer></script>
+  <script src="/static/vendor/bootstrap/bootstrap.bundle.min.js" defer></script>
+</head>
+<body hx-headers='{"X-CSRF-Token": "{{ csrf_token }}"}'>
+  <a class="visually-hidden-focusable position-absolute m-2 p-2 bg-body" href="#contenido" style="z-index:2000">Saltar al contenido</a>
+  <nav class="navbar navbar-expand-lg app-nav">
+    <div class="container">
+      <a class="navbar-brand" href="/"><span class="app-mark"><i class="bi bi-grid-1x2-fill" aria-hidden="true"></i></span>TimeTrack</a>
+      <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse"
+              data-bs-target="#menu" aria-controls="menu" aria-expanded="false" aria-label="Abrir menú">
+        <i class="bi bi-list" aria-hidden="true"></i>
+      </button>
+      <div class="collapse navbar-collapse" id="menu">
+        <ul class="navbar-nav ms-lg-3 me-auto">
+          <li class="nav-item">
+            <a class="nav-link{% if request.url.path == '/' %} active{% endif %}" href="/"{% if request.url.path == '/' %} aria-current="page"{% endif %}><i class="bi bi-house" aria-hidden="true"></i>Inicio</a>
+          </li>
+          {% for m in modules %}
+          <li class="nav-item">
+            <a class="nav-link{% if request.url.path.startswith('/' ~ m.name ~ '/') or request.url.path == '/' ~ m.name %} active{% endif %}"
+               href="/{{ m.name }}/"{% if request.url.path.startswith('/' ~ m.name ~ '/') or request.url.path == '/' ~ m.name %} aria-current="page"{% endif %}><i class="bi {{ m.icon }}" aria-hidden="true"></i>{{ m.title }}</a>
+          </li>
+          {% endfor %}
+        </ul>
+        <button type="button" class="theme-toggle my-2 my-lg-0" data-theme-toggle
+                aria-label="Cambiar entre modo claro y oscuro" title="Cambiar tema">
+          <i class="bi bi-moon-stars-fill" aria-hidden="true"></i><i class="bi bi-sun-fill" aria-hidden="true"></i>
+        </button>
+      </div>
+    </div>
+  </nav>
+
+  <main id="contenido" class="container pb-5" tabindex="-1">
+    {% block content %}{% endblock %}
+  </main>
+  <div id="anuncios" class="visually-hidden" role="status" aria-live="polite"></div>
+  <div id="avisos"class="position-fixed bottom-0 end-0 p-3" style="z-index:2000;max-width:28rem" role="status" aria-live="polite"></div>
+
+  <script>
+    document.querySelector("[data-theme-toggle]").addEventListener("click", function () {
+      var next = document.documentElement.getAttribute("data-bs-theme") === "dark" ? "light" : "dark";
+      document.documentElement.setAttribute("data-bs-theme", next);
+      try { localStorage.setItem("theme", next); } catch (e) {}
+      // La barra de la ventana instalada sigue el tema elegido a mano (no solo el del sistema).
+      document.querySelectorAll('meta[name="theme-color"]').forEach(function (m) {
+        m.setAttribute("content", next === "dark" ? "#0b1f26" : "#eef2f6"); m.removeAttribute("media");
+      });
+    });
+    // htmx no muestra las respuestas 4xx/5xx: avisamos (p. ej. rechazos de seguridad).
+    // Anuncio para lectores de pantalla (región aria-live oculta). Se vacía primero para que un texto repetido se vuelva a leer.
+    window.anunciar = function (texto) {
+      var r = document.getElementById("anuncios");
+      r.textContent = "";
+      setTimeout(function () { r.textContent = texto; }, 50);
+    };
+    // Aviso no modal en una región aria-live (textContent: el texto del servidor nunca se interpreta como HTML).
+    function avisar(texto) {
+      var box = document.createElement("div");
+      box.className = "alert alert-danger shadow-sm mb-2";
+      box.textContent = texto;
+      var cont = document.getElementById("avisos");
+      cont.appendChild(box);
+      setTimeout(function () { box.remove(); }, 8000);
+    }
+    document.body.addEventListener("htmx:responseError", function (e) {
+      avisar("El servidor rechazó la petición (" + e.detail.xhr.status + "): " +
+             (e.detail.xhr.responseText || "").slice(0, 200));
+    });
+    // Sin servidor (apagado o sin red) la petición ni siquiera llega: htmx avisa con sendError.
+    document.body.addEventListener("htmx:sendError", function () {
+      avisar("No hay conexión con el servidor. Compruebe que TimeTrack esté corriendo (dashboard\\iniciar.cmd) y reintente.");
+    });
+    if ("serviceWorker" in navigator) {   // PWA: solo en localhost/HTTPS; falla en silencio si no está disponible
+      window.addEventListener("load", function () { navigator.serviceWorker.register("/sw.js").catch(function () {}); });
+    }
+  </script>
+  {% block scripts %}{% endblock %}
+</body>
+</html>

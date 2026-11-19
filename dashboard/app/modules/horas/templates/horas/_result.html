@@ -1,0 +1,36 @@
+<div class="alert {% if result.ok %}alert-success{% else %}alert-danger{% endif %}" role="alert">
+  {% if result.ok %}<i class="bi bi-check-circle-fill me-1" aria-hidden="true"></i><strong>Envío completado</strong>
+  {% else %}<i class="bi bi-exclamation-triangle-fill me-1" aria-hidden="true"></i><strong>Envío terminado con {{ result.errors | length }} error(es)</strong>{% endif %}
+</div>
+
+<div class="card">
+  <div class="card-body">
+    {% if azure %}
+    <div class="section-label"><i class="bi bi-kanban" aria-hidden="true"></i>Azure DevOps</div>
+    <ul class="mb-3">
+      {% for a in azure %}
+      <li>{{ a.title }}{% if a.incident %} <span class="meta">(incidente {{ a.incident }})</span>{% endif %} →
+        {% if a.url %}<a href="{{ a.url }}" target="_blank" rel="noopener">work item {{ a.ref }} <i class="bi bi-box-arrow-up-right small" aria-hidden="true"></i><span class="visually-hidden">(se abre en una pestaña nueva)</span></a>{% else %}work item {{ a.ref }}{% endif %}
+      </li>
+      {% endfor %}
+    </ul>
+    {% endif %}
+
+    {% if result.siges %}
+    <div class="section-label"><i class="bi bi-calendar-check" aria-hidden="true"></i>SIGES</div>
+    <ul class="mb-3">{% for s in result.siges %}<li>{{ s.fecha }} <span class="meta">— HTTP {{ s.status }}</span></li>{% endfor %}</ul>
+    {% endif %}
+
+    {% if result.errors %}
+    <div class="section-label text-danger"><i class="bi bi-x-octagon" aria-hidden="true"></i>Errores</div>
+    <ul class="text-danger">{% for e in result.errors %}<li>{{ e }}</li>{% endfor %}</ul>
+    <div class="meta mb-2">Lo que salió bien ya quedó en el ledger: puede volver a interpretar el reporte y solo se enviará lo pendiente.</div>
+    {% endif %}
+
+    <details>
+      <summary class="meta"><i class="bi bi-journal-text me-1" aria-hidden="true"></i>Registro</summary>
+      <pre class="log mt-2">{% for l in log %}{{ l }}
+{% endfor %}</pre>
+    </details>
+  </div>
+</div>

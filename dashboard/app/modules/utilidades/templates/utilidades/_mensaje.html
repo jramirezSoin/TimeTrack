@@ -1,0 +1,20 @@
+{% for a in r.advertencias %}
+<div class="alert alert-light border py-2"><i class="bi bi-stars me-1" aria-hidden="true"></i><strong>La IA advierte:</strong> {{ a }}</div>
+{% endfor %}
+{% for v in r.verificaciones %}
+<div class="alert alert-warning py-2"><i class="bi bi-exclamation-triangle me-1" aria-hidden="true"></i><strong>Verifique:</strong> {{ v }}</div>
+{% endfor %}
+{% if not r.advertencias and not r.verificaciones %}
+<div class="alert alert-light border py-2"><i class="bi bi-check2-circle me-1" aria-hidden="true"></i>Los valores de los datos aparecen en la salida y no se detectaron valores ni elementos ajenos al esquema. Revise el resultado antes de usarlo: la IA puede equivocarse.</div>
+{% endif %}
+
+<div class="section-label"><span>Mensaje ({{ r.formato|upper }})</span>
+  <button type="button" class="btn btn-sm btn-outline-secondary ms-auto" data-copiar aria-label="Copiar mensaje {{ r.formato|upper }}"><i class="bi bi-clipboard me-1" aria-hidden="true"></i>Copiar</button>
+</div>
+<pre class="salida">{{ r.salida }}</pre>
+{% if log %}
+<details class="mt-3"><summary class="meta">Registro</summary>
+  <pre class="log">{% for l in log %}{{ l }}
+{% endfor %}</pre>
+</details>
+{% endif %}

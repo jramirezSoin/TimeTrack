@@ -1,0 +1,38 @@
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+
+# Datos locales: estado del ledger/catálogo y archivos temporales de escritura atómica
+data/
+*.tmp
+
+# Configuración y credenciales
+.env
+.env.*
+!.env.example
+azure/config.json
+siges/config.json
+siges/test.sh
+docker-compose.override.yml
+
+# Herramientas y entorno local
+.claude/
+.agents/
+.vscode/
+.idea/
+.pytest_cache/
+.mypy_cache/
+*.log
+.DS_Store
+Thumbs.db
+
+# Empaquetado
+*.egg-info/
+build/
+dist/
+
+# Reportes y planes reales (datos de trabajo personales)
+*.xlsx
+tests/first_*

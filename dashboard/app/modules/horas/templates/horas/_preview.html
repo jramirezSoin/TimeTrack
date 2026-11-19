@@ -1,0 +1,86 @@
+<section>
+  <h2 class="h5 fw-semibold mb-3">Vista previa</h2>
+
+  <div class="section-label"><i class="bi bi-kanban" aria-hidden="true"></i>Azure DevOps</div>
+  {% if not preview.az_tasks %}<p class="meta">Nada pendiente.</p>{% endif %}
+  {% for t in preview.az_tasks %}
+  <div class="card mb-3">
+    <div class="card-body">
+      <div class="d-flex justify-content-between align-items-start gap-3">
+        <div>
+          <div class="fw-semibold">{{ t.title }}</div>
+          <div class="meta">{{ t.iteration }}</div>
+        </div>
+        <span class="badge badge-soft fs-6">{{ t.hours|string|replace('.', ',') }}&nbsp;h</span>
+      </div>
+      <div class="mt-2">
+        {% if t.incident %}
+          {% set st = preview.incidents[t.incident] %}
+          <i class="bi bi-bug meta me-1" aria-hidden="true"></i><span class="meta">Incidente</span> <strong>{{ t.incident }}</strong>
+          {% if st.state == "nuevo" %}<span class="badge badge-warn ms-1"><i class="bi bi-exclamation-circle me-1" aria-hidden="true"></i>{{ st.label }}</span>
+          {% else %}<span class="badge badge-soft ms-1"><i class="bi bi-check2 me-1" aria-hidden="true"></i>{{ st.label }}</span>{% endif %}
+        {% else %}
+          <i class="bi bi-diagram-2 meta me-1" aria-hidden="true"></i><span class="meta">Tarea agrupada bajo</span> «{{ t.parent_title }}»
+        {% endif %}
+      </div>
+      <ul class="mt-2 mb-2 ps-3">{% for l in t.description.split("<br>") %}<li>{{ l }}</li>{% endfor %}</ul>
+      <div class="meta">Si la tarea ya existe en el sprint, se suman las horas y se concatena la descripción.</div>
+    </div>
+  </div>
+  {% endfor %}
+
+  <div class="section-label mt-4"><i class="bi bi-calendar-check" aria-hidden="true"></i>SIGES</div>
+  {% if not preview.sg_days %}<p class="meta">Nada pendiente.</p>{% endif %}
+  {% for d in preview.sg_days %}
+  <div class="card mb-3">
+    <div class="card-header d-flex justify-content-between">
+      <span><i class="bi bi-calendar-event me-1" aria-hidden="true"></i>{{ d.fecha }}</span>
+      <span class="badge badge-soft">{{ "%g"|format(d.tareas | sum(attribute="horas"))|replace('.', ',') }}&nbsp;h</span>
+    </div>
+    <div class="table-responsive">
+      <table class="table table-sm mb-0 align-middle">
+        <thead><tr><th class="ps-3">Sprint</th><th>Horas</th><th>Comentario</th></tr></thead>
+        <tbody>
+          {% for x in d.tareas %}<tr><td class="ps-3">{{ x.numIdent }}</td><td>{{ "%g"|format(x.horas)|replace('.', ',') }}</td><td>{{ x.comentario }}
+
+            <div class="mt-2">
+        {% if x.incident %}
+          {% set st = preview.incidents[x.incident] %}
+          <i class="bi bi-bug meta me-1" aria-hidden="true"></i><span class="meta">Incidente</span> <strong>{{ x.incident }}</strong>
+          {% if st.state == "nuevo" %}<span class="badge badge-warn ms-1"><i class="bi bi-exclamation-circle me-1" aria-hidden="true"></i>{{ st.label }}</span>
+          {% else %}<span class="badge badge-soft ms-1"><i class="bi bi-check2 me-1" aria-hidden="true"></i>{{ st.label }}</span>{% endif %}
+        {% endif %}
+      </div>
+
+
+          </td></tr>{% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+  {% endfor %}
+
+  {% if preview.pending %}
+  <div class="card card-send mt-4">
+    <div class="card-body">
+      <form hx-post="/horas/enviar" hx-target="#envio" hx-swap="innerHTML"
+            hx-confirm="¿Enviar a Azure DevOps y SIGES? Esto escribe en los sistemas reales." hx-disabled-elt="find button">
+        <input type="hidden" name="preview_id" value="{{ preview_id }}">
+        {% for inc in preview.new_incidents %}
+        <div class="mb-3">
+          <label for="titulo-{{ inc }}" class="form-label fw-semibold">El incidente {{ inc }} no existe en Azure. Título para crear el Bug:</label>
+          <input type="text" id="titulo-{{ inc }}" name="titulo__{{ inc }}" class="form-control" required autocomplete="off">
+        </div>
+        {% endfor %}
+        <div class="d-flex align-items-center flex-wrap gap-3">
+          <button type="submit" class="btn btn-primary"><i class="bi bi-send" aria-hidden="true"></i>Enviar a Azure y SIGES</button>
+          <span class="meta"><i class="bi bi-shield-exclamation me-1" aria-hidden="true"></i>Escribe en los sistemas reales.</span>
+        </div>
+      </form>
+    </div>
+  </div>
+  {% else %}
+  <div class="alert alert-light border mt-4"><i class="bi bi-check-circle me-1" aria-hidden="true"></i>No hay nada pendiente de enviar: todo lo del reporte ya está registrado.</div>
+  {% endif %}
+  <div id="envio" class="mt-3" aria-live="polite"></div>
+</section>

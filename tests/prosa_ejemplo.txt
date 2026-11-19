@@ -1,0 +1,6 @@
+29-10-2026
+Fuera de incidente, Soporte a errores presentados en ambiente de QA con transferencias entre cuentas BN.
+100001273 revisión de diferencias contables en SINPE Móvil, se revisan insumos obtenidos de SFB, BCCR y Bitácora SINPE.
+30-10-2026
+100001273 revisión de diferencias contables en SINPE Móvil, se revisan insumos obtenidos de SFB, BCCR y Bitácora SINPE. 4
+Fuera de incidente, Soporte a bugs presentados en QA con tarjetas, bn fondos e instalación de cliente Oracle en nuevo servidor de desarrollo con Carlos Badilla.  4

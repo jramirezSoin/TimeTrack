@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% block title %}Tareas · Dashboard{% endblock %}
+{% block content %}
+<div class="page-head">
+  <h1>Tareas</h1>
+  <p>Una nota por tarea. Arrástrela a otra columna para cambiar su estado, o al basurero para cerrarla.</p>
+</div>
+
+<form class="nota-nueva" hx-post="/tareas/nueva" hx-target="#tablero" hx-swap="outerHTML"
+      hx-disabled-elt="find button" hx-indicator="#creando"
+      hx-on::after-request="if (event.detail.successful) this.reset()">
+  <input type="text" name="titulo" class="form-control" placeholder="Nueva tarea…" maxlength="200"
+         aria-label="Título de la tarea" required autocomplete="off">
+  <input type="text" name="incidente" class="form-control" placeholder="Incidente (opcional)…"
+         inputmode="numeric" maxlength="20" aria-label="Número de incidente" autocomplete="off">
+  <button type="submit" class="btn btn-primary"><i class="bi bi-plus-lg" aria-hidden="true"></i>Pegar nota</button>
+  <span id="creando" class="meta htmx-indicator">Creando… (si el incidente es nuevo, se crea su Bug en Azure)</span>
+</form>
+
+<div class="tablero-wrap">
+  {% include "tareas/_board.html" %}
+</div>
+{% endblock %}
+{% block scripts %}<script src="/static/tareas.js" defer></script>{% endblock %}

@@ -1,0 +1,8 @@
+{% if total %}
+<ul class="mb-3">
+  {% for c in commits %}<li><code>{{ c.short }}</code> {{ c.mensaje }} <span class="meta">— {{ c.autor }}</span></li>{% endfor %}
+  {% if total > commits | length %}<li class="meta">… y {{ total - commits | length }} más</li>{% endif %}
+</ul>
+{% else %}
+<p class="meta mb-3">Ninguno.</p>
+{% endif %}

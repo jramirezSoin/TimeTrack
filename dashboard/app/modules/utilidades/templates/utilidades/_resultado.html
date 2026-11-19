@@ -1,0 +1,55 @@
+{% if error %}
+<div class="alert alert-warning py-2" role="alert"><i class="bi bi-exclamation-triangle me-1" aria-hidden="true"></i>{{ error }}</div>
+{% if log %}<pre class="log">{% for l in log %}{{ l }}
+{% endfor %}</pre>{% endif %}
+{% else %}
+{% for a in avisos or [] %}
+<div class="alert alert-light border py-2"><i class="bi bi-info-circle me-1" aria-hidden="true"></i>{{ a }}</div>
+{% endfor %}
+
+{% if filas %}
+<div class="card mb-3">
+  <div class="table-responsive">
+    <table class="table mb-0">
+      <tbody>
+        {% for k, v in filas %}
+        <tr><th scope="row" class="ps-3 fw-semibold" style="width: 14rem">{{ k }}</th><td class="dato">{{ v }}</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endif %}
+
+{% for etiqueta, texto in bloques or [] %}
+<div class="section-label"><span>{{ etiqueta }}</span>
+  <button type="button" class="btn btn-sm btn-outline-secondary ms-auto" data-copiar aria-label="Copiar {{ etiqueta }}"><i class="bi bi-clipboard me-1" aria-hidden="true"></i>Copiar</button>
+</div>
+<pre class="salida">{{ texto }}</pre>
+{% endfor %}
+
+{% if diffs is defined and diffs is not none %}
+  {% if not diffs %}
+  <div class="alert alert-light border"><i class="bi bi-check2-circle me-1" aria-hidden="true"></i>Sin diferencias.</div>
+  {% else %}
+  <div class="section-label"><i class="bi bi-subtract" aria-hidden="true"></i>{{ diffs|length }} diferencia(s)</div>
+  <div class="card">
+    <div class="table-responsive">
+      <table class="table mb-0 align-top">
+        <thead><tr><th class="ps-3">Ruta</th><th>Cambio</th><th>Antes</th><th>Después</th></tr></thead>
+        <tbody>
+          {% for d in diffs %}
+          <tr class="diff-{{ d.tipo }}">
+            <td class="ps-3 dato">{{ d.ruta }}</td>
+            <td><span class="badge diff-chip">{{ d.tipo }}</span></td>
+            <td class="dato">{{ d.antes }}</td>
+            <td class="dato">{{ d.despues }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+  {% endif %}
+{% endif %}
+{% endif %}

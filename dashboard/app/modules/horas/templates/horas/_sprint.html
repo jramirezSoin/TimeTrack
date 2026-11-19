@@ -1,0 +1,47 @@
+{% if error %}
+<div class="alert alert-warning py-2" role="alert"><i class="bi bi-exclamation-triangle me-1" aria-hidden="true"></i>{{ error }}</div>
+{% else %}
+<div class="section-label"><i class="bi bi-list-task" aria-hidden="true"></i>{{ sprint }}</div>
+
+{% if not grupos %}
+<div class="alert alert-light border"><i class="bi bi-inbox me-1" aria-hidden="true"></i>No tiene tareas asignadas en este sprint.</div>
+{% else %}
+<p class="stat mb-3">
+  {{ totales.tareas }} {{ 'tarea' if totales.tareas == 1 else 'tareas' }} · estimado {{ totales.estimado|string|replace('.', ',') }}&nbsp;h · completado {{ totales.completado|string|replace('.', ',') }}&nbsp;h · restante {{ totales.restante|string|replace('.', ',') }}&nbsp;h
+</p>
+
+{% for g in grupos %}
+<div class="card mb-3">
+  <div class="card-header d-flex flex-wrap align-items-center gap-2">
+    <i class="bi bi-diagram-2" aria-hidden="true"></i>
+    {% if g.padre %}
+      <span>{{ g.padre.titulo }}</span>
+      <a class="meta ms-auto" href="{{ g.padre.url }}" target="_blank" rel="noopener">{{ g.padre.tipo }}&nbsp;#{{ g.padre.id }}<span class="visually-hidden"> (se abre en una pestaña nueva)</span></a>
+    {% else %}
+      <span>Sin tarea padre</span>
+    {% endif %}
+  </div>
+  <div class="table-responsive">
+    <table class="table mb-0 align-top">
+      <thead><tr><th class="ps-3">Tarea</th><th>Estado</th><th class="text-end"><abbr title="Estimado">Est.</abbr></th><th class="text-end"><abbr title="Completado">Compl.</abbr></th><th class="text-end pe-3"><abbr title="Restante">Rest.</abbr></th></tr></thead>
+      <tbody>
+        {% for t in g.tareas %}
+        <tr>
+          <td class="ps-3">
+            <a href="{{ t.url }}" target="_blank" rel="noopener" class="fw-semibold text-decoration-none">{{ t.titulo }}<span class="visually-hidden"> (se abre en una pestaña nueva)</span></a>
+            <span class="meta">#{{ t.id }}</span>
+            {% if t.descripcion %}<div class="log mt-1">{{ t.descripcion }}</div>{% endif %}
+          </td>
+          <td><span class="badge badge-soft">{{ t.estado }}</span></td>
+          <td class="text-end">{{ t.estimado|string|replace('.', ',') }}</td>
+          <td class="text-end">{{ t.completado|string|replace('.', ',') }}</td>
+          <td class="text-end pe-3">{{ t.restante|string|replace('.', ',') }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endfor %}
+{% endif %}
+{% endif %}

@@ -1,0 +1,90 @@
+{% extends "base.html" %}
+{% block title %}Historial · Reporte de horas{% endblock %}
+{% block content %}
+<div class="page-head">
+  <h1>Reporte de horas</h1>
+  <p>Lo que ya se envió (ledger) y los incidentes conocidos (catálogo). Solo lectura.</p>
+</div>
+{% set active = 'historial' %}{% include "horas/_tabs.html" %}
+
+<div class="section-label"><i class="bi bi-calendar3" aria-hidden="true"></i>Envíos por día</div>
+<div class="card mb-3">
+  <div class="card-body">
+    <div class="cal-head">
+      <a class="btn btn-outline-secondary btn-sm cal-nav" href="?mes={{ cal.anterior }}" aria-label="Mes anterior"><i class="bi bi-chevron-left" aria-hidden="true"></i></a>
+      <h2 class="cal-titulo" id="cal-titulo">{{ cal.titulo }}</h2>
+      <a class="btn btn-outline-secondary btn-sm cal-nav" href="?mes={{ cal.siguiente }}" aria-label="Mes siguiente"><i class="bi bi-chevron-right" aria-hidden="true"></i></a>
+      {% if not cal.es_hoy %}<a class="btn btn-outline-secondary btn-sm ms-auto" href="?mes={{ cal.hoy_mes }}">Hoy</a>{% endif %}
+    </div>
+    <table class="cal" aria-labelledby="cal-titulo">
+      <thead>
+        <tr>{% for nombre, corto in cal.dias %}<th scope="col"><abbr title="{{ nombre }}">{{ corto }}</abbr></th>{% endfor %}</tr>
+      </thead>
+      <tbody>
+        {% for semana in cal.semanas %}
+        <tr>
+          {% for c in semana %}
+          <td class="cal-dia{% if not c.en_mes %} fuera{% endif %}{% if c.hoy %} hoy{% endif %}{% if cal.detalle and c.iso == cal.detalle.iso %} sel{% endif %}">
+            {% if c.total and c.en_mes %}
+            <a href="?mes={{ cal.mes }}&amp;dia={{ c.iso }}" aria-label="{{ c.etiqueta }}"{% if c.hoy %} aria-current="date"{% endif %}>
+              <span class="cal-num">{{ c.num }}</span>
+              <span class="cal-chips">
+                {% if c.azure %}<span class="cal-chip"><i class="bi bi-kanban" aria-hidden="true"></i>{{ c.azure }}</span>{% endif %}
+                {% if c.siges %}<span class="cal-chip"><i class="bi bi-calendar-check" aria-hidden="true"></i>{{ c.siges }}</span>{% endif %}
+              </span>
+            </a>
+            {% else %}
+            <span class="cal-vacio"{% if c.hoy %} aria-current="date"{% endif %}><span class="cal-num">{{ c.num }}</span></span>
+            {% endif %}
+          </td>
+          {% endfor %}
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    <div class="cal-leyenda meta">
+      <span><i class="bi bi-kanban" aria-hidden="true"></i>Azure DevOps</span>
+      <span><i class="bi bi-calendar-check" aria-hidden="true"></i>SIGES</span>
+      <span>Cada actividad aparece en el día de la tarea; las registradas antes de que el ledger guardara la fecha, en el día en que se enviaron.</span>
+    </div>
+  </div>
+</div>
+
+{% if cal.detalle %}
+<div class="card mb-4">
+  <div class="card-header">Tareas del {{ cal.detalle.titulo }}</div>
+  <div class="table-responsive">
+    <table class="table mb-0 align-middle">
+      <thead><tr><th class="ps-3">Sistema</th><th>Detalle</th><th>Enviado</th></tr></thead>
+      <tbody>
+        {% for e in cal.detalle.envios %}
+        <tr>
+          <td class="ps-3"><span class="badge badge-soft"><i class="bi {{ 'bi-kanban' if e.sistema == 'azure' else 'bi-calendar-check' }} me-1" aria-hidden="true"></i>{{ e.sistema }}</span></td>
+          <td>{{ e.detalle }}</td>
+          <td>{{ e.enviado }}{% if e.sin_fecha %} <span class="meta">(día de envío)</span>{% endif %}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% else %}
+<div class="alert alert-light border mb-4"><i class="bi bi-inbox me-1" aria-hidden="true"></i>{% if envios %}No hay envíos en {{ cal.titulo }}.{% else %}Aún no hay envíos registrados.{% endif %}</div>
+{% endif %}
+
+<div class="section-label"><i class="bi bi-bug" aria-hidden="true"></i>Incidentes en el catálogo</div>
+{% if not incidentes %}
+  <div class="alert alert-light border"><i class="bi bi-inbox me-1" aria-hidden="true"></i>El catálogo está vacío.</div>
+{% else %}
+<div class="card">
+  <div class="table-responsive">
+    <table class="table table-hover mb-0 align-middle">
+      <thead><tr><th class="ps-3">Incidente</th><th>Work item</th><th>Título</th></tr></thead>
+      <tbody>
+        {% for i in incidentes %}<tr><td class="ps-3">{{ i.incidente }}</td><td>{{ i.azure_id }}</td><td>{{ i.titulo }}</td></tr>{% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endif %}
+{% endblock %}
